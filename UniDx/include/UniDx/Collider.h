@@ -63,7 +63,7 @@ public:
     Vector3 center;
     Vector3 size;
 
-    AABBCollider() : center(Vector3::Zero), size(Vector3(0.5f,0.5f,0.5f)) {}
+    AABBCollider(Vector3 c = Vector3::Zero) : center(c), size(Vector3(0.5f,0.5f,0.5f)) {}
 
     // ワールド空間における空間境界を取得
     virtual Bounds getBounds() const override;
@@ -90,7 +90,7 @@ public:
     Vector3 center;
     float radius;
 
-    SphereCollider() : center(Vector3::Zero), radius(0.5) {}
+    SphereCollider(Vector3 c = Vector3::Zero, float r = 0.5) : center(c), radius(r) {}
 
     // ワールド空間における空間境界を取得
     virtual Bounds getBounds() const override;

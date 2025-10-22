@@ -159,10 +159,7 @@
     <ClInclude Include="source\Player.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\Hinge.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\ChainRender.h">
+    <ClInclude Include="source\MapData.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -185,10 +182,7 @@
     <ClCompile Include="source\Player.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\Hinge.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\ChainRender.cpp">
+    <ClCompile Include="source\MapData.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -282,5 +276,10 @@
     <Library Include="..\DirectXTex\release_lib\DirectXTex.lib">
       <Filter>DirectXTex\Release</Filter>
     </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Resource\map_data.txt">
+      <Filter>リソース ファイル</Filter>
+    </Text>
   </ItemGroup>
 </Project>

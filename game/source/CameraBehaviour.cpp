@@ -19,6 +19,8 @@ void CameraBehaviour::OnEnable()
 
 void CameraBehaviour::Update()
 {
+    transform->position = player->transform->position + Vector3(0, 4, -8);
+
     const float speed = 1;
 
     const float angleSpeed = 1.0f;

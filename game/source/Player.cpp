@@ -60,10 +60,21 @@ void Player::Update()
         velocity.x = 0.0f;
     }
 
-    if (Input::GetKey(Keyboard::W))
+    if (Input::GetKey(Keyboard::S))
     {
-        velocity.y = jumpSpeed;
+        velocity.z = -moveSpeed;
+        rotation = Quaternion::CreateFromYawPitchRoll(XM_PI, 0, 0);
     }
+    else if (Input::GetKey(Keyboard::W))
+    {
+        velocity.z = moveSpeed;
+        rotation = Quaternion::CreateFromYawPitchRoll(0, 0, 0);
+    }
+    else
+    {
+        velocity.z = 0.0f;
+    }
+
     rb->linearVelocity = velocity;
     rb->rotation = rotation;
 }

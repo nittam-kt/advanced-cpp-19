@@ -16,7 +16,7 @@ public:
     {
         auto ptr = std::unique_ptr<CubeRenderer>(new CubeRenderer());
         ptr->AddMaterial<TVertex>(shaderPath);
-        ptr->createBufer_ = [](SubMesh* submesh) { submesh->createBuffer<TVertex>(); };
+        ptr->setCreateBudderType<TVertex>();
         return ptr;
     }
     template<typename TVertex>
@@ -24,8 +24,21 @@ public:
     {
         auto ptr = std::unique_ptr<CubeRenderer>(new CubeRenderer());
         ptr->AddMaterial<TVertex>(shaderPath, texturePath);
-        ptr->createBufer_ = [](SubMesh* submesh) { submesh->createBuffer<TVertex>(); };
+        ptr->setCreateBudderType<TVertex>();
         return ptr;
+    }
+    template<typename TVertex>
+    static std::unique_ptr<CubeRenderer> create(std::shared_ptr<Material> material)
+    {
+        auto ptr = std::unique_ptr<CubeRenderer>(new CubeRenderer());
+        ptr->AddMaterial(material);
+        ptr->setCreateBudderType<TVertex>();
+        return ptr;
+    }
+    template<typename TVertex>
+    void setCreateBudderType()
+    {
+        createBufer_ = [](SubMesh* submesh) { submesh->createBuffer<TVertex>(); };
     }
 
 protected:
@@ -46,7 +59,7 @@ public:
     {
         auto ptr = std::unique_ptr<SphereRenderer>(new SphereRenderer());
         ptr->AddMaterial<TVertex>(shaderPath);
-        ptr->createBufer_ = [](SubMesh* submesh) { submesh->createBuffer<TVertex>(); };
+        ptr->setCreateBudderType<TVertex>();
         return ptr;
     }
     template<typename TVertex>
@@ -54,8 +67,21 @@ public:
     {
         auto ptr = std::unique_ptr<SphereRenderer>(new SphereRenderer());
         ptr->AddMaterial<TVertex>(shaderPath, texturePath);
-        ptr->createBufer_ = [](SubMesh* submesh) { submesh->createBuffer<TVertex>(); };
+        ptr->setCreateBudderType<TVertex>();
         return ptr;
+    }
+    template<typename TVertex>
+    static std::unique_ptr<CubeRenderer> create(std::shared_ptr<Material> material)
+    {
+        auto ptr = std::unique_ptr<SphereRenderer>(new SphereRenderer());
+        ptr->AddMaterial(material);
+        ptr->setCreateBudderType<TVertex>();
+        return ptr;
+    }
+    template<typename TVertex>
+    void setCreateBudderType()
+    {
+        createBufer_ = [](SubMesh* submesh) { submesh->createBuffer<TVertex>(); };
     }
 
 protected:
