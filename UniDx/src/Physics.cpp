@@ -339,5 +339,128 @@ void Physics::solvePositionConstraint(Rigidbody* A, Rigidbody* B, const ContactM
 
 }
 
+// Raycast
+bool Physics::Raycast(const Vector3& origin, const Vector3& direction, float maxDistance,
+    RaycastHit* hitInfo, std::function<bool(const Collider*)> filter)
+{
+    // 無効な方向や負の距離はヒットしない
+    const float eps = 1e-6f;
+    if (maxDistance <= 0.0f) return false;
+    if (fabs(direction.x) < eps && fabs(direction.y) < eps && fabs(direction.z) < eps) return false;
+
+    bool hitAny = false;
+    float bestT = std::numeric_limits<float>::infinity();
+
+    // スラブ法で各 AABB とレイの交差を調べる
+    for (const auto& shape : physicsShapes)
+    {
+        if (!shape.isValid()) continue;
+        Collider* col = shape.getCollider();
+        if (!col) continue;
+
+        if (filter && !filter(col)) continue; // フィルタで除外
+
+        Bounds b = col->getBounds();
+        Vector3 bmin = b.min();
+        Vector3 bmax = b.max();
+
+        float tmin = 0.0f;
+        float tmax = maxDistance;
+
+        // X axis
+        if (fabs(direction.x) < eps)
+        {
+            if (origin.x < bmin.x || origin.x > bmax.x) continue;
+        }
+        else
+        {
+            float inv = 1.0f / direction.x;
+            float t1 = (bmin.x - origin.x) * inv;
+            float t2 = (bmax.x - origin.x) * inv;
+            float tn = std::min(t1, t2);
+            float tf = std::max(t1, t2);
+            tmin = std::max(tmin, tn);
+            tmax = std::min(tmax, tf);
+            if (tmin > tmax) continue;
+        }
+
+        // Y axis
+        if (fabs(direction.y) < eps)
+        {
+            if (origin.y < bmin.y || origin.y > bmax.y) continue;
+        }
+        else
+        {
+            float inv = 1.0f / direction.y;
+            float t1 = (bmin.y - origin.y) * inv;
+            float t2 = (bmax.y - origin.y) * inv;
+            float tn = std::min(t1, t2);
+            float tf = std::max(t1, t2);
+            tmin = std::max(tmin, tn);
+            tmax = std::min(tmax, tf);
+            if (tmin > tmax) continue;
+        }
+
+        // Z axis
+        if (fabs(direction.z) < eps)
+        {
+            if (origin.z < bmin.z || origin.z > bmax.z) continue;
+        }
+        else
+        {
+            float inv = 1.0f / direction.z;
+            float t1 = (bmin.z - origin.z) * inv;
+            float t2 = (bmax.z - origin.z) * inv;
+            float tn = std::min(t1, t2);
+            float tf = std::max(t1, t2);
+            tmin = std::max(tmin, tn);
+            tmax = std::min(tmax, tf);
+            if (tmin > tmax) continue;
+        }
+
+        // ここで交差。tmin が最初に交差するパラメータ
+        float tHit = tmin;
+        if (tHit < 0.0f)
+        {
+            // レイ始点がボックス内部にいる場合、tmin は負になりうる -> その場合は 0 を使う（始点でヒット）
+            tHit = 0.0f;
+        }
+
+        if (tHit <= maxDistance && tHit < bestT)
+        {
+            // ヒット点と法線を求める（近似）
+            Vector3 hitPoint = origin + direction * tHit;
+
+            Vector3 normal = Vector3::Zero;
+            const float normEps = 1e-3f;
+            if (fabs(hitPoint.x - bmin.x) < normEps) normal = Vector3(-1, 0, 0);
+            else if (fabs(hitPoint.x - bmax.x) < normEps) normal = Vector3(1, 0, 0);
+            else if (fabs(hitPoint.y - bmin.y) < normEps) normal = Vector3(0, -1, 0);
+            else if (fabs(hitPoint.y - bmax.y) < normEps) normal = Vector3(0, 1, 0);
+            else if (fabs(hitPoint.z - bmin.z) < normEps) normal = Vector3(0, 0, -1);
+            else if (fabs(hitPoint.z - bmax.z) < normEps) normal = Vector3(0, 0, 1);
+            else
+            {
+                // 近似で決められなければ、法線を direction の逆方向に設定
+                Vector3 invDir = -direction;
+                // 正規化が可能なら正規化（Vector3::Normalize などがあればそちらを使ってください）
+                float len = std::sqrt(invDir.x * invDir.x + invDir.y * invDir.y + invDir.z * invDir.z);
+                if (len > eps) normal = invDir / len;
+            }
+
+            bestT = tHit;
+            if (hitInfo != nullptr)
+            {
+                hitInfo->collider = col;
+                hitInfo->point = hitPoint;
+                hitInfo->normal = normal;
+                hitInfo->distance = bestT;
+            }
+            hitAny = true;
+        }
+    }
+
+    return hitAny;
+}
 
 } // UniDx

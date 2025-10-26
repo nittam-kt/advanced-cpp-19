@@ -39,6 +39,18 @@ class BoxGeometory;
 
 
 // --------------------
+// Raycast の hit 情報
+// --------------------
+struct RaycastHit
+{
+    Collider* collider = nullptr;
+    Vector3 point = Vector3::Zero;
+    Vector3 normal = Vector3::Zero;
+    float distance = 0.0f;
+};
+
+
+// --------------------
 // PhysicsActor
 // --------------------
 class  PhysicsActor
@@ -131,6 +143,11 @@ public:
     void unregisterRigidbody(Rigidbody* rigidbody);
     void register3d(Collider* collider);
     void unregister3d(Collider* collider);
+
+    // origin, direction, maxDistance, filter (デフォルト nullptr => 全て含める)
+    // 戻り値: ヒット情報を含む optional（ヒットしなければ nullopt）
+    bool Raycast(const Vector3& origin, const Vector3& direction, float maxDistance,
+        RaycastHit* hitInfo = nullptr, std::function<bool(const Collider*)> filter = nullptr);
 
 private:
     struct PotentialPair {
